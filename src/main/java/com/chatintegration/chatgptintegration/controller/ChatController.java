@@ -4,10 +4,8 @@ import com.chatintegration.chatgptintegration.dto.ChatGptRequest;
 import com.chatintegration.chatgptintegration.dto.ChatGptResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -21,11 +19,16 @@ public class ChatController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @GetMapping("/api")
+    @GetMapping()
     public String chat(@RequestParam("prompt") String prompt){
         ChatGptRequest request = new ChatGptRequest(model,prompt);
         ChatGptResponse chatGptResponse = restTemplate.postForObject(apiUrl,request,ChatGptResponse.class);
         return chatGptResponse.getChoices().get(0).getMessage().getContent();
     }
 
+    @PostMapping("/api")
+    public String createRequest(@RequestBody ChatGptRequest request){
+        ChatGptResponse chatGptResponse = restTemplate.postForObject(apiUrl,request,ChatGptResponse.class);
+        return chatGptResponse.getChoices().get(0).getMessage().getContent();
+    }
 }
